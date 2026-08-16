@@ -39,7 +39,7 @@ router.put("/tasks/:id", (req, res, next) => {
   const index = tasks.findIndex((t) => t.id === id);
   if (index === -1) {
     const err = new Error("Task not found");
-    err.status = 404;
+    err.stzatus = 404;
     return next(err);
   }
   tasks[index] = mergeTaskUpdate(tasks[index], req.body);
