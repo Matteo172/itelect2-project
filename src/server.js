@@ -2,13 +2,16 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import router from "./routes/index.js";
-import authRouter from "./routes/auth.js";
+import authRoutes from "./routes/auth.js";
+import taskRoutes from "./routes/index.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-if (!process.env.JWT_SECRET) {
-  console.error("JWT_SECRET is missing from .env -- the API cannot sign tokens.");
+const secret = process.env.JWT_SECRET;
+if (!secret || secret.length < 32) {
+  console.error("JWT_SECRET in .env must be at least 32 characters.");
   process.exit(1);
 }
 
@@ -16,22 +19,10 @@ app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+app.use("/api/auth", authRoutes);
+app.use("/api", taskRoutes);
 
-app.use("/api/auth", authRouter);
-app.use("/api", router);
-
-app.use((err, req, res, next) => {
-  console.error(err.message);
-  if (err.name === "SequelizeValidationError") {
-    return res.status(400).json({ error: err.errors.map((e) => e.message) });
-  }
-  if (err.name === "SequelizeUniqueConstraintError") {
-    return res.status(409).json({ error: "That email is already registered" });
-  }
-  const status = err.status || 500;
-  res.status(status).json({ error: err.message });
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
