@@ -22,3 +22,6 @@ My IT Elective 2 backend web development project.
 ![POST request](src/screenshots/db_SequelizeMeta.png)
 ![PUT request](src/screenshots/db_Tasks.png)
 ![DELETE request](src/screenshots/db_users.png)
+
+## Live URL
+https://itelect2-project.onrender.com
