@@ -15,7 +15,11 @@ if (!secret || secret.length < 32) {
   process.exit(1);
 }
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .filter(Boolean);
+
+app.use(cors({ origin: allowedOrigins }));
 app.use(morgan("dev"));
 app.use(express.json());
 
