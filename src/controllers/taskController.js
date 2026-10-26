@@ -3,12 +3,17 @@ import db from "../../models/index.cjs";
 const { Task, User } = db;
 
 export async function listTasks(req, res) {
-  const tasks = await Task.findAll({ include: User, order: [["id", "ASC"]] });
+  const tasks = await Task.findAll({
+    include: { model: User, attributes: { exclude: ["password"] } },
+    order: [["id", "ASC"]],
+  });
   res.json(tasks);
 }
 
 export async function getTask(req, res) {
-  const task = await Task.findByPk(req.params.id, { include: User });
+  const task = await Task.findByPk(req.params.id, {
+    include: { model: User, attributes: { exclude: ["password"] } },
+  });
   if (!task) {
     return res.status(404).json({ error: "Task not found" });
   }
